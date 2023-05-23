@@ -1,0 +1,111 @@
+secret=6a4be639166840848ddd384f2997e21c
+sha256_secret=2c39cacddecfcd2a0f0b087a23647fb65e9a5b532361d60a8583cd116d37c553
+
+sha256_secret= echo -n "3000:asterisk:6a4be639166840848ddd384f2997e21c" |sha256sum
+
+17966                 snprintf(a1, sizeof(a1), "%s:%s:%s", username, p->realm, secret);
+17967                 if (sha256) ast_sha256_hash(a1_hash, a1);
+17968                 else ast_md5_hash(a1_hash, a1);
+
+H2 = echo -n "REGISTER:sips:3000@172.16.246.13:5061" | sha256sum
+a9f474b7e0df63314eff35b777a9f5a71a243f855131a6506fad8697ef75ed86
+
+
+17977                 snprintf(a2, sizeof(a2), "%s:%s", sip_methods[sipmethod].text,
+17978                                 S_OR(keys[K_URI].s, uri));
+17979                 if (sha256) ast_sha256_hash(a2_hash, a2);
+17980                 else ast_md5_hash(a2_hash, a2);
+
+response = echo -n "2c39cacddecfcd2a0f0b087a23647fb65e9a5b532361d60a8583cd116d37c553:4408d899:a9f474b7e0df63314eff35b777a9f5a71a243f855131a6506fad8697ef75ed86" | sha256sum
+ ==> [ 67949006ffbfa0bbc086247e4692390414198431e1c6b99406104532c1292f7b ]
+
+17982                 snprintf(resp, sizeof(resp), "%s:%s:%s", a1_hash, usednonce, a2_hash);
+17983                 if (sha256) ast_sha256_hash(resp_hash, resp);
+17984                 else ast_md5_hash(resp_hash, resp);
+
+
+<--- SIP read from TLS:172.16.246.223:37370 --->
+REGISTER sips:3000@172.16.246.13:5061 SIP/2.0
+Via: SIP/2.0/TLS 172.16.246.223;branch=z9hG4bK2ad0ef9426c91bb02
+Max-Forwards: 64
+From: <sips:3000@172.16.246.13:5061>;tag=bcef239ce8
+To: <sips:3000@172.16.246.13:5061>
+Call-ID: 2f0d3923df0dee27
+CSeq: 1136739929 REGISTER
+Allow: INVITE, ACK, CANCEL, BYE, NOTIFY, OPTIONS
+Authorization: Digest username="3000",realm="asterisk",nonce="4408d899",uri="sips:3000@172.16.246.13:5061",response="67949006ffbfa0bbc086247e4692390414198431e1c6b99406104532c1292f7b",algorithm=SHA-256
+Contact: <sips:3000@172.16.246.223:5061>;expires=60
+User-Agent: Evertz UXP-TRS4K-2U/V300B20230516-71467002
+Content-Length: 0
+
+<------------->
+--- (12 headers 0 lines) ---
+Sending to 172.16.246.223:5060 (no NAT)
+[May 23 20:02:55] NOTICE[2867]: chan_sip.c:17994 check_auth: Correct auth, but based on stale nonce received from '<sips:3000@172.16.246.13:5061>;tag=bcef239ce8'
+
+<--- Transmitting (no NAT) to 172.16.246.223:5060 --->
+SIP/2.0 401 Unauthorized
+Via: SIP/2.0/TLS 172.16.246.223;branch=z9hG4bK2ad0ef9426c91bb02;received=172.16.246.223
+From: <sips:3000@172.16.246.13:5061>;tag=bcef239ce8
+To: <sips:3000@172.16.246.13:5061>;tag=as498c1dbe
+Call-ID: 2f0d3923df0dee27
+CSeq: 1136739929 REGISTER
+Server: Asterisk PBX 18.10.0~dfsg+~cs6.10.40431411-2
+Allow: INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, SUBSCRIBE, NOTIFY, INFO, PUBLISH, MESSAGE
+Supported: replaces, timer
+WWW-Authenticate: Digest algorithm=SHA-256, realm="asterisk", nonce="1fbab7fd", stale=true
+Content-Length: 0
+
+
+<------------>
+Scheduling destruction of SIP dialog '2f0d3923df0dee27' in 32000 ms (Method: REGISTER)
+
+<--- SIP read from TLS:172.16.246.223:37370 --->
+REGISTER sips:3000@172.16.246.13:5061 SIP/2.0
+Via: SIP/2.0/TLS 172.16.246.223;branch=z9hG4bK8f0d08d43354b5033
+Max-Forwards: 64
+From: <sips:3000@172.16.246.13:5061>;tag=bcef239ce8
+To: <sips:3000@172.16.246.13:5061>
+Call-ID: 2f0d3923df0dee27
+CSeq: 1136739930 REGISTER
+Allow: INVITE, ACK, CANCEL, BYE, NOTIFY, OPTIONS
+Authorization: Digest username="3000",realm="asterisk",nonce="1fbab7fd",uri="sips:3000@172.16.246.13:5061",response="7a83fdc91ae05ad528204a02ae3bafa8fed31651eefa41028bff50b2e398baa0",algorithm=SHA-256
+Contact: <sips:3000@172.16.246.223:5061>;expires=60
+User-Agent: Evertz UXP-TRS4K-2U/V300B20230516-71467002
+Content-Length: 0
+
+<------------->
+--- (12 headers 0 lines) ---
+Sending to 172.16.246.223:5060 (no NAT)
+Reliably Transmitting (no NAT) to 172.16.246.223:5061:
+OPTIONS sips:3000@172.16.246.223:5061 SIP/2.0
+Via: SIP/2.0/TLS 172.16.246.13:5061;branch=z9hG4bK5c41e942
+Max-Forwards: 70
+From: "asterisk" <sip:asterisk@172.16.246.13>;tag=as67f8e351
+To: <sips:3000@172.16.246.223:5061>
+Contact: <sip:asterisk@172.16.246.13:5061;transport=tls>
+Call-ID: 3e11dec12740bb3204245db760c4022e@172.16.246.13:5061
+CSeq: 102 OPTIONS
+User-Agent: Asterisk PBX 18.10.0~dfsg+~cs6.10.40431411-2
+Date: Tue, 23 May 2023 20:02:55 GMT
+Allow: INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, SUBSCRIBE, NOTIFY, INFO, PUBLISH, MESSAGE
+Supported: replaces, timer
+Content-Length: 0
+
+
+---
+
+<--- Transmitting (no NAT) to 172.16.246.223:5060 --->
+SIP/2.0 200 OK
+Via: SIP/2.0/TLS 172.16.246.223;branch=z9hG4bK8f0d08d43354b5033;received=172.16.246.223
+From: <sips:3000@172.16.246.13:5061>;tag=bcef239ce8
+To: <sips:3000@172.16.246.13:5061>;tag=as498c1dbe
+Call-ID: 2f0d3923df0dee27
+CSeq: 1136739930 REGISTER
+Server: Asterisk PBX 18.10.0~dfsg+~cs6.10.40431411-2
+Allow: INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, SUBSCRIBE, NOTIFY, INFO, PUBLISH, MESSAGE
+Supported: replaces, timer
+Expires: 60
+Contact: <sips:3000@172.16.246.223:5061>;expires=60
+Date: Tue, 23 May 2023 20:02:55 GMT
+Content-Length: 0

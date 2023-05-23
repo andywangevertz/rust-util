@@ -1,0 +1,15 @@
+[package]
+name = "util"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+nix = "0.26"
+www-authenticate = "0.4"
+#base64 = "0.21"
+#sha2 = "0.10"
+#md5 = "0.7"
+actix-web = "4"
+sha256 = "1.1.3"
