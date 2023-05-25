@@ -40,8 +40,8 @@ dependencies = [
  "flate2",
  "futures-core",
  "h2",
- "http",
- "httparse",
+ "http 0.2.9 (registry+https://github.com/rust-lang/crates.io-index)",
+ "httparse 1.8.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "httpdate",
  "itoa",
  "language-tags",
@@ -75,7 +75,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d66ff4d247d2b160861fa2866457e85706833527840e4133f8f49aa423a38799"
 dependencies = [
  "bytestring",
- "http",
+ "http 0.2.9 (registry+https://github.com/rust-lang/crates.io-index)",
  "regex",
  "serde",
  "tracing",
@@ -154,7 +154,7 @@ dependencies = [
  "encoding_rs",
  "futures-core",
  "futures-util",
- "http",
+ "http 0.2.9 (registry+https://github.com/rust-lang/crates.io-index)",
  "itoa",
  "language-tags",
  "log",
@@ -485,7 +485,7 @@ dependencies = [
  "futures-core",
  "futures-sink",
  "futures-util",
- "http",
+ "http 0.2.9 (registry+https://github.com/rust-lang/crates.io-index)",
  "indexmap",
  "slab",
  "tokio",
@@ -517,6 +517,15 @@ checksum = "7f24254aa9a54b5c858eaee2f5bccdb46aaf0e486a595ed5fd8f86ba55232a70"
 [[package]]
 name = "http"
 version = "0.2.9"
+dependencies = [
+ "bytes",
+ "fnv",
+ "itoa",
+]
+
+[[package]]
+name = "http"
+version = "0.2.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bd6effc99afb63425aff9b05836f029929e345a6148a14b7ecd5ab67af944482"
 dependencies = [
@@ -524,6 +533,10 @@ dependencies = [
  "fnv",
  "itoa",
 ]
+
+[[package]]
+name = "httparse"
+version = "1.8.0"
 
 [[package]]
 name = "httparse"
@@ -545,7 +558,7 @@ checksum = "5617e92fc2f2501c3e2bc6ce547cad841adba2bae5b921c7e52510beca6d084c"
 dependencies = [
  "base64 0.13.1",
  "bytes",
- "http",
+ "http 0.2.9 (registry+https://github.com/rust-lang/crates.io-index)",
  "httpdate",
  "language-tags",
  "mime",
@@ -601,6 +614,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "json"
+version = "0.12.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "078e285eafdfb6c4b434e0d31e8cfcb5115b651496faca5749b88fafd4f23bfd"
+
+[[package]]
 name = "language-tags"
 version = "0.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -654,6 +673,12 @@ name = "matches"
 version = "0.1.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2532096657941c2fea9c289d370a250971c689d4f143798ff67113ec042024a5"
+
+[[package]]
+name = "md5"
+version = "0.7.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "490cc448043f947bae3cbee9c203358d62dbee0db12107a74be5c30ccfd09771"
 
 [[package]]
 name = "memchr"
@@ -1171,6 +1196,10 @@ name = "util"
 version = "0.1.0"
 dependencies = [
  "actix-web",
+ "http 0.2.9",
+ "httparse 1.8.0",
+ "json",
+ "md5",
  "nix",
  "sha256",
  "www-authenticate",

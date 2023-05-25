@@ -1,0 +1,8 @@
+{  "server": "172.16.246.13",
+   "port" : "5061",
+   "user" : "3000",
+   "password" : "6a4be639166840848ddd384f2997e21c",
+   "realm" : "asterisk",
+   "algo": "SHA-256",
+   "transport" : "TLS"
+}
