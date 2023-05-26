@@ -1,0 +1,6 @@
+[submodule "http"]
+	path = http
+	url = https://github.com/andywangevertz/http
+[submodule "httparse"]
+	path = httparse
+	url = https://github.com/andywangevertz/httparse
