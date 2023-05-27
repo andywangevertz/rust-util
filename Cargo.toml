@@ -16,3 +16,4 @@ sha256 = "1.1.3"
 json = "0.12.4"
 http = { path="./http" }
 httparse = { path="./httparse" }
+rand = "0.8.5"

@@ -1,5 +1,5 @@
-use std::io::{self, prelude::*};
-use std::fs::File;
+//use std::io::{self, prelude::*};
+//use std::fs::File;
 
 pub fn parseconfig(cfg: &str) -> json::JsonValue {
   let contents = std::fs::read_to_string(cfg).expect("configuration file is missing!");
@@ -46,7 +46,53 @@ pub fn sipdigest_md5(user: &str, realm: &str, pass: &str, method: &str, uri: &st
   String::from(resphash)
   
 }
+// https://rust-lang-nursery.github.io/rust-cookbook/algorithms/randomness.html
+pub fn randomstr(len: usize) -> String {
+  use rand::Rng;
+  const CHARSET: &[u8] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZ\
+                          abcdefghijklmnopqrstuvwxyz\
+                          0123456789)(*&^%$#@!~";
+  let password_len: usize = len;
+  let mut rng = rand::thread_rng();
 
-pub fn sipdigest(jcfg: &json::JsonValue) {
-  println!("got jcfg[user]: {}", jcfg["user"]);
+  let password: String = (0..password_len)
+      .map(|_| {
+          let idx = rng.gen_range(0..CHARSET.len());
+          CHARSET[idx] as char
+      })
+      .collect();
+  password
+}
+pub fn initdigest(jcfg: &mut json::JsonValue) {
+  // jcfg.contains() -- for array
+  // jcfg.has_key()  -- for obj
+  if !jcfg.has_key("method") {
+    jcfg["method"] = "REGISTER".into();
+  }
+  if !jcfg.has_key("uri") {
+    let sipx = if jcfg["transport"] == "TLS" { "sips" } else { "sip" };
+    jcfg["uri"] =  format!("{}:{}@{}:{}", sipx, jcfg["user"], jcfg["server"], jcfg["port"]).into();
+  }
+  if !jcfg.has_key("nonce") {
+    jcfg["nonce"] = randomstr(8).into();
+  }
+}
+// server, port, user, password, realm, algo (MD5 SHA-256), transport (UDP TCP TLS)
+pub fn sipdigest(jcfg: &mut json::JsonValue) -> String {
+  initdigest(jcfg);
+  
+  let user = &jcfg["user"].to_string();
+  let ream = &jcfg["realm"].to_string();
+  let pass = &jcfg["password"].to_string();
+  let method = &jcfg["method"].to_string();
+  let uri = &jcfg["uri"].to_string();
+  let nonce = &jcfg["nonce"].to_string();
+  //println!("got jcfg[user]: {}, method: {}, uri: {}, nonce: {}", user, method, uri, nonce);
+  
+  if jcfg["algo"] == "SHA-256" {
+    sipdigest_sha(user, ream, pass, method, uri, nonce)
+  } else {
+    sipdigest_md5(user, ream, pass, method, uri, nonce)
+  }
+
 }

@@ -4,5 +4,6 @@
    "password" : "6a4be639166840848ddd384f2997e21c",
    "realm" : "asterisk",
    "algo": "SHA-256",
-   "transport" : "TLS"
+   "transport" : "TLS",
+   "nonce" : "4408d899"
 }

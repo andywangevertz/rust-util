@@ -1201,6 +1201,7 @@ dependencies = [
  "json",
  "md5",
  "nix",
+ "rand",
  "sha256",
  "www-authenticate",
 ]

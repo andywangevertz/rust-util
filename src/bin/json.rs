@@ -1,3 +1,5 @@
+#![allow(dead_code, unused_variables)]
+
 use std::io::{self, prelude::*};
 use std::fs::File;
 fn parseconfig1(cfg: &str) -> io::Result<()> 
@@ -24,7 +26,9 @@ fn parseconfig2(cfg: &str) -> json::JsonValue {
 fn main() {
   //let ret = parseconfig1("3000.json");
   //let jobj = parseconfig2("3000.json"); 
-  let jobj = util::parseconfig("3000.json"); 
-  println!("{} {} {} {}", jobj["server"], jobj["port"], jobj["user"], jobj["password"]);
-  util::sipdigest(&jobj);
+  let mut jobj = util::parseconfig("3000.json"); 
+  println!("{} {} {} {}", 
+     jobj["server"], jobj["port"], jobj["user"], jobj["password"]);
+  //util::initdigest(&mut jobj);
+  println!("get digest: {}", util::sipdigest(&mut jobj));
 }

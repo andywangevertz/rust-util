@@ -9,8 +9,9 @@ fn main () {
        println!("Parent exit");
     } 
     ForkResult::Child => { 
-	loop {} // until killed 
-        println!("Child exit"); 
+	     loop {} // until killed 
+       // never reach here
+       //println!("Child exit"); 
     }
   } 
 }
