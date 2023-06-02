@@ -80,7 +80,7 @@ fn main() {
   //let (stream, ret) = util::send_to("172.16.246.30:5060", &request); 
   let (mut stream, ret) = util::send_to_vecs("172.16.246.30:5060", &request); 
   println!("get resp: {:?}", ret); 
-  let (name, value) = util::parse_vecs(&ret);
+  let (name, value, via) = util::parse_vecs(&ret);
   println!("name: {}, value: {}", name, value); 
   if name == "nonce" && value.len() > 0 {
      parsed["nonce"] = value.into();

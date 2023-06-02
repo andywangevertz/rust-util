@@ -175,7 +175,7 @@ pub fn parse_vecs(lines: & Vec<String>) -> (String, String, String) {
         //else if parts[0].find("WWW-Authenticate")
     }   
     if via.len() > 0 { 
-       let (ip, port) = extract_string(&via, "");
+       let (ip, port) = extract_string(&via, "received=(.*?);rport=(.*?)$");
     } 
  
     if status.find("401 Unauthorized").is_some() {
