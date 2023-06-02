@@ -1,9 +1,16 @@
 use std::io::prelude::*;
 //use std::fs::File;
 use std::io::{Read, Write};
-use std::net::TcpStream;
+use std::net::{TcpStream};
 //use std::time::Duration;
 use std::io::BufReader;
+
+// for TLS connection
+use native_tls::{Certificate, TlsConnector, TlsStream};
+use std::fs;
+// https://stackoverflow.com/questions/68316251/rust-use-common-trait-type-for-different-streams-tcp-stream-tls-stream
+pub trait IOReadWrite: Read + Write  {}
+impl <T: Read + Write > IOReadWrite for T {}
 
 pub fn parseconfig(cfg: &str) -> json::JsonValue {
   let contents = std::fs::read_to_string(cfg).expect("configuration file is missing!");
@@ -132,7 +139,9 @@ pub fn vecs_to_lines(lines: & Vec<String>) -> String {
     res 
 }
 
-pub fn read_vecs(stream: &mut TcpStream) -> Vec<String> {
+pub fn read_vecs<S>(stream: &mut S) -> Vec<String> 
+where S: IOReadWrite,
+{
     let buf_reader = BufReader::new(stream);
     let sip_resp: Vec<_> = buf_reader
         .lines()
@@ -142,14 +151,20 @@ pub fn read_vecs(stream: &mut TcpStream) -> Vec<String> {
     sip_resp
 }
 
-pub fn read_lines(stream: &mut TcpStream) -> String {
+pub fn read_lines<S>(stream: &mut S) -> String 
+where S: IOReadWrite,
+{
     let sip_resp = read_vecs(stream);
     vecs_to_lines(&sip_resp)
 }
 
 pub fn extract_string(input: &str, reg: &str) -> (String, String) {
    let re = regex::Regex::new(reg).unwrap();
-   let caps = re.captures(input).unwrap();
+   let caps = re.captures(input);
+   if caps.is_none() {
+      return (String::new(), String::new());
+   } 
+   let caps = caps.unwrap(); 
    let p1 = caps.get(1).map_or("", |m| m.as_str());
    let p2 = caps.get(2).map_or("", |m| m.as_str());
    (String::from(p1), String::from(p2))
@@ -187,15 +202,37 @@ pub fn parse_vecs(lines: & Vec<String>) -> (String, String, String) {
     }
 }
 
-pub fn send_to_vecs(ipport: &str, msg: &str) -> (TcpStream, Vec<String>) {
+pub fn send_to_vecs(ipport: &str, msg: &str) -> (Box<dyn IOReadWrite>, Vec<String>) 
+{
   let mut stream = TcpStream::connect(ipport).expect("connect error!");
   stream.write_all(msg.as_bytes()).expect("write to stream error!");
   let res = read_vecs(&mut stream);
-  (stream, res)
+  (Box::new(stream), res)
+}
+
+// certfile: certificate file for the server. chains file with multiple certs won't work 
+// servername: server name in certificate. most likely the same as server's IP in SM case.
+//     = so, ipport would be "172.16.246.13:5061" and serveranme is "172.16.246.13"
+pub fn send_to_vecs_tls(ipport: &str, msg: &str, certfile: &str, servername: &str) -> (Box<dyn IOReadWrite>, Vec<String>) 
+{
+    let cert_data = fs::read(certfile).expect("read certfile error!");
+    let cert = Certificate::from_pem(&cert_data).expect("convert to certificate error!");
+    let connector = TlsConnector::builder()
+        .add_root_certificate(cert)
+        .build().expect("creae connector error!");
+ 
+  let stream = TcpStream::connect(ipport).expect("connect error!");
+
+  let mut stream = connector.connect(servername, stream).expect("connect to servername error!");
+
+  stream.write_all(msg.as_bytes()).expect("write to stream error!");
+  let res = read_vecs(&mut stream);
+  (Box::new(stream), res)
 }
 
 // send one msg at a time and then disconnect
-pub fn send_to(ipport: &str, msg: &str) -> (TcpStream, String) {
+pub fn send_to(ipport: &str, msg: &str) -> (Box<dyn IOReadWrite>, String) 
+{
   let mut stream = TcpStream::connect(ipport).expect("connect error!");
   //stream.set_nonblocking(true);
   //stream.set_read_timeout(Some(Duration::from_millis(2000)));
@@ -208,11 +245,14 @@ pub fn send_to(ipport: &str, msg: &str) -> (TcpStream, String) {
   */
   //let res = read_stream(&mut stream);
   let res = read_lines(&mut stream);
-  (stream, res)
+  (Box::new(stream), res)
 }
 
-pub fn send_more(stream: &mut TcpStream, msg: &str) -> String {
+pub fn send_more<S>(stream: &mut S, msg: &str) -> String 
+where S: IOReadWrite,
+{
   stream.write_all(msg.as_bytes()).expect("write to stream error!");
   let res = read_lines(stream);
   res
 }
+

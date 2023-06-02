@@ -18,3 +18,4 @@ http = { path="./http" }
 httparse = { path="./httparse" }
 rand = "0.8.5"
 regex = "1.8.3"
+native-tls = "0.2.11"
