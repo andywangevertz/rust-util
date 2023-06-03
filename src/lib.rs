@@ -1,6 +1,6 @@
 use std::io::prelude::*;
 //use std::fs::File;
-use std::io::{Read, Write};
+use std::io::{self, Read, Write};
 use std::net::{TcpStream};
 //use std::time::Duration;
 use std::io::BufReader;
@@ -11,6 +11,50 @@ use std::fs;
 // https://stackoverflow.com/questions/68316251/rust-use-common-trait-type-for-different-streams-tcp-stream-tls-stream
 pub trait IOReadWrite: Read + Write  {}
 impl <T: Read + Write > IOReadWrite for T {}
+
+use std::net::UdpSocket;
+
+pub struct UdpStream {
+    socket: UdpSocket,
+    buf: Vec<u8>,
+}
+
+impl UdpStream {
+    // passing the localip:port and remoteip:port
+    pub fn init(local: &str, remote: &str) -> io::Result<Self> {
+      let socket = UdpSocket::bind(local)?;
+      socket.connect(remote)?;
+      let buf = vec![0; 4096];
+      Ok(Self {socket, buf })
+    }
+    // or creating outside and just passing the socket
+    pub fn new(socket: UdpSocket) -> io::Result<Self> {
+        let buf = vec![0; 4096]; // Set an appropriate buffer size
+        Ok(Self { socket, buf })
+    }
+}
+
+impl Read for UdpStream {
+    fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
+        let (n, _) = self.socket.recv_from(buf)?;
+        Ok(n)
+    }
+}
+
+impl Write for UdpStream {
+    fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
+        let n = self.socket.send(buf)?;
+        Ok(n)
+    }
+    fn write_all(&mut self, buf: &[u8]) -> Result<(), std::io::Error> {
+        let n = self.socket.send(buf)?;
+        Ok(())
+    }
+
+    fn flush(&mut self) -> io::Result<()> {
+        Ok(())
+    }
+}
 
 pub fn parseconfig(cfg: &str) -> json::JsonValue {
   let contents = std::fs::read_to_string(cfg).expect("configuration file is missing!");
@@ -205,6 +249,14 @@ pub fn parse_vecs(lines: & Vec<String>) -> (String, String, String) {
 pub fn send_to_vecs(ipport: &str, msg: &str) -> (Box<dyn IOReadWrite>, Vec<String>) 
 {
   let mut stream = TcpStream::connect(ipport).expect("connect error!");
+  stream.write_all(msg.as_bytes()).expect("write to stream error!");
+  let res = read_vecs(&mut stream);
+  (Box::new(stream), res)
+}
+
+pub fn send_to_vecs_udp(local: &str, ipport: &str, msg: &str) -> (Box<dyn IOReadWrite>, Vec<String>) 
+{
+  let mut stream = UdpStream::init(local, ipport).expect("udp init error!");
   stream.write_all(msg.as_bytes()).expect("write to stream error!");
   let res = read_vecs(&mut stream);
   (Box::new(stream), res)
