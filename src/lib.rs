@@ -246,6 +246,55 @@ pub fn parse_vecs(lines: & Vec<String>) -> (String, String, String) {
     }
 }
 
+// create UDP/TCP/TLS stream based on the json config
+pub fn init_stream(jcfg: & json::JsonValue) -> Box<dyn IOReadWrite> 
+{
+  let transport = jcfg["transport"].to_string();
+  if transport == "TCP" { 
+     let ipport = format!("{}:{}", jcfg["server"], jcfg["port"]);
+     let stream = TcpStream::connect(ipport).expect("connect error!");
+     Box::new(stream)
+
+  } else if transport == "TLS" {
+     let ipport  = format!("{}:{}", jcfg["server"], jcfg["port"]);
+     let servername  = jcfg["server"].to_string();
+     let connector: TlsConnector;
+     if jcfg.has_key("certfile") {
+        let certfile = jcfg["certfile"].to_string();
+    	let cert_data = fs::read(certfile).expect("read certfile error!");
+    	let cert = Certificate::from_pem(&cert_data).expect("convert to certificate error!");
+    	connector = TlsConnector::builder()
+              .add_root_certificate(cert)
+              .build().expect("creae connector error!");
+     } else {
+    	connector = TlsConnector::builder()
+              .build().expect("creae connector error!");
+     }
+     let stream = TcpStream::connect(ipport).expect("connect error!");
+     let stream = connector.connect(&servername, stream).expect("connect to servername error!");
+     Box::new(stream)
+
+  } else {
+     let local = format!("{}:{}", jcfg["local"], jcfg["port"]);
+     let ipport = format!("{}:{}", jcfg["server"], jcfg["port"]);
+     let stream = UdpStream::init(&local, &ipport).expect("udp init error!");
+     Box::new(stream)
+
+  } 
+
+}
+pub fn send_to_stream<S>(stream:&mut S, msg: &str) 
+where S: IOReadWrite,
+{
+  stream.write_all(msg.as_bytes()).expect("write to stream error!");
+}
+pub fn read_from_stream<S>(stream:&mut S) -> Vec<String>
+where S: IOReadWrite,
+{
+  read_vecs(stream)
+}
+// So at this stage, we could have one thread reading and one thread sending..
+
 pub fn send_to_vecs(ipport: &str, msg: &str) -> (Box<dyn IOReadWrite>, Vec<String>) 
 {
   let mut stream = TcpStream::connect(ipport).expect("connect error!");

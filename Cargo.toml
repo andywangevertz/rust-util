@@ -19,3 +19,5 @@ httparse = { path="./httparse" }
 rand = "0.8.5"
 regex = "1.8.3"
 native-tls = "0.2.11"
+chrono = "0.4.26"
+timer = "0.2.0"
