@@ -63,8 +63,8 @@ fn main() {
    let mut parsed = json::parse(r#"
 {  "server": "172.16.246.13",
    "port" : "5061",
-   "user" : "3000",
-   "password" : "7abc14aac22b3ffab8148aeb25f97f2e",
+   "user" : "3003",
+   "password" : "bdd205b2544d7a27ecf70f5f442e18d6",
    "realm" : "asterisk",
    "algo": "MD5",
    "transport" : "TLS",
